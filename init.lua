@@ -173,12 +173,12 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Global fallback for <C-]> to use LSP definition (will be overridden by buffer-local mappings when LSP attaches)
 vim.keymap.set('n', '<C-]>', function()
-  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  local clients = vim.lsp.get_clients { bufnr = 0 }
   if #clients > 0 then
     vim.lsp.buf.definition()
   else
     -- Fallback to default tag jump if no LSP is available
-    vim.cmd('normal! <C-]>')
+    vim.cmd 'normal! <C-]>'
   end
 end, { desc = 'Go to definition (LSP or tags)' })
 
@@ -634,6 +634,7 @@ require('lazy').setup({
           cmd = { 'texlab' },
           filetypes = { 'tex', 'plaintex', 'bib' },
         },
+        marksman = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
