@@ -171,6 +171,17 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Global fallback for <C-]> to use LSP definition (will be overridden by buffer-local mappings when LSP attaches)
+vim.keymap.set('n', '<C-]>', function()
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  if #clients > 0 then
+    vim.lsp.buf.definition()
+  else
+    -- Fallback to default tag jump if no LSP is available
+    vim.cmd('normal! <C-]>')
+  end
+end, { desc = 'Go to definition (LSP or tags)' })
+
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {
@@ -423,6 +434,9 @@ require('lazy').setup({
         callback = function(event)
           local buf = event.buf
 
+          -- Override <C-]> to use LSP definition instead of ctags
+          vim.keymap.set('n', '<C-]>', vim.lsp.buf.definition, { buffer = buf, desc = 'LSP: Go to definition' })
+
           -- Find references for the word under your cursor.
           vim.keymap.set('n', 'grr', builtin.lsp_references, { buffer = buf, desc = '[G]oto [R]eferences' })
 
@@ -550,6 +564,10 @@ require('lazy').setup({
           --  For example, in C this would take you to the header.
           map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
+          -- Jump directly to definition using LSP (works better for some languages like Rust)
+          -- This is the traditional Vim mapping for "go to definition"
+          map('<C-]>', vim.lsp.buf.definition, 'Go to definition (LSP)')
+
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
@@ -599,11 +617,23 @@ require('lazy').setup({
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --  See `:help lsp-config` for information about keys and how to configure
       local servers = {
-        clangd = {},
+        clangd = {
+          cmd = { 'clangd' },
+          filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
+        },
         -- gopls = {},
-        pyright = {},
-        ['rust-analyzer'] = {},
-        texlab = {},
+        pyright = {
+          cmd = { 'pyright-langserver', '--stdio' },
+          filetypes = { 'python' },
+        },
+        ['rust-analyzer'] = {
+          cmd = { 'rust-analyzer' },
+          filetypes = { 'rust' },
+        },
+        texlab = {
+          cmd = { 'texlab' },
+          filetypes = { 'tex', 'plaintex', 'bib' },
+        },
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
