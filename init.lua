@@ -206,7 +206,7 @@ vim.keymap.set('n', '<leader>te', function()
   else
     vim.diagnostic.disable()
   end
-  print("Diagnostics " .. (diagnostics_enabled and "enabled" or "disabled"))
+  print('Diagnostics ' .. (diagnostics_enabled and 'enabled' or 'disabled'))
 end, { desc = 'Toggle [E]rror diagnostics' })
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -221,7 +221,7 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 
 -- Enable indent-based code folding (works well for C/C++)
 vim.opt.foldmethod = 'indent'
-vim.opt.foldlevel = 99  -- Keep folds open by default
+vim.opt.foldlevel = 99 -- Keep folds open by default
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -670,7 +670,7 @@ require('lazy').setup({
         'lua-language-server', -- Lua Language server
         'stylua', -- Used to format Lua code
         -- You can add other tools here that you want Mason to install
-        'rust-analyzer',
+        -- 'rust-analyzer', -- Use rustup-managed version (e.g., nightly) instead of Mason standalone
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
