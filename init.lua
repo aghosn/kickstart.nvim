@@ -190,9 +190,9 @@ vim.diagnostic.config {
   float = { border = 'rounded', source = 'if_many' },
   underline = { severity = vim.diagnostic.severity.ERROR },
 
-  -- Can switch between these as you prefer
-  virtual_text = true, -- Text shows up at the end of the line
-  virtual_lines = false, -- Teest shows up underneath the line, with virtual lines
+  virtual_text = false,
+  virtual_lines = false,
+  signs = true,
 
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
   jump = { float = true },
@@ -210,6 +210,20 @@ vim.keymap.set('n', '<leader>te', function()
 end, { desc = 'Toggle [E]rror diagnostics' })
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+-- Show diagnostics in a floating window when the cursor rests on a line
+vim.api.nvim_create_autocmd('CursorHold', {
+  callback = function()
+    vim.diagnostic.open_float(nil, {
+      focusable = false,
+      close_events = { 'BufLeave', 'CursorMoved', 'InsertEnter', 'FocusLost' },
+      source = 'if_many',
+      prefix = ' ',
+      scope = 'cursor',
+      border = 'rounded',
+    })
+  end,
+})
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
